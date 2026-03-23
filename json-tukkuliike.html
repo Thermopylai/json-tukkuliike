@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <title>JSON-tukkuliike</title>
+</head>
+<body>
+    <main class="container-md">
+        <header class="d-flex flex-column align-items-center">
+            <h1 class="mb-3">JSON-tukkuliike</h1>
+            <p>Tervetuloa JSON-tukkuliikkeeseen! Tässä näet kaikki tuotteemme ja niiden tiedot.</p>
+        </header>
+        <hr />
+        <div class="row">
+            <section class="col-md-3 d-flex flex-column align-items-center mb-5">
+                <h2 class="mb-3">Toimittajat</h2>
+                <div id="toimittajat"></div>
+            </section>
+            <section class="col-md-9 d-flex flex-column align-items-center">
+                <h2 class="mb-3">Yleistietoa tästä sovelluksesta.</h2> 
+                <div class="mb-3">Tämän sivun sisältö tuotetaan dynaamisesti JavaScriptin avulla JSON-tietojen perusteella. 
+                    Muotoiluun käytetään Bootstrapia ja sivusto käyttää semanttisesti korrekteja nimityksiä sen sisällön eri osista. 
+                    Numerojen lokalisointi on tehty suomalaisen käytännön mukaisesti, suoraan JavaScriptin avulla, käyttäen toLocaleString()-metodia. 
+                    Linkkien otsikointi on tehty JavaScriptin avulla, käyttäen substring()-metodia. 
+                    Toimittajat ja tuotteet on luetteloitu forEach()-metodin avulla. 
+                    Toimittajien dokumenttirakenteessa olevat linkit kerätään talteen luokkatunnuksen "tuotelinkit" perusteella käyttäen getElementsByClassName()-metodia. 
+                    Näitä verrataan tuotteiden toimittajan WWW-linkkeihin, jotta vältetään päällekkäiset linkit.
+                    Uutta linkkiä ei luoda dokumenttirakenteeseen, jos sama linkki löytyy jo olemassaolevien joukosta. 
+                    Tuotteet sisältävät katteen, joka on laskettu JavaScriptin avulla, taulukon yksittäisiä rivejä muodostettaessa. 
+                    Sivuston footer tuotetaan myös JavaScriptin avulla ja se sisältää Date().getFullYear()-metodilla tuotetun nykyisen vuoden.</div>
+                <h2 class="mb-3">Tuotteet</h2>
+                <div id="tuotteet"></div>
+            </section>
+        </div>
+        <hr />
+        <footer id="footer" class="d-flex flex-column align-items-center"></footer>    
+    </main>
+
+    <script>
+        const tuotteetDiv = document.getElementById("tuotteet");
+
+        const tuotteetJson = `[
+            {"tuotekoodi": 1, "tuotenimi": "Tuote A", "ostohinta": 10.99, "myyntihinta": 15.99, "toimittajan WWW-linkki": "https://www.example.com/toimittaja1"},
+            {"tuotekoodi": 2, "tuotenimi": "Tuote B", "ostohinta": 5.49, "myyntihinta": 8.99, "toimittajan WWW-linkki": "https://www.example.com/toimittaja1"},
+            {"tuotekoodi": 3, "tuotenimi": "Tuote C", "ostohinta": 20.00, "myyntihinta": 25.00, "toimittajan WWW-linkki": "https://www.example.com/toimittaja2"},
+            {"tuotekoodi": 4, "tuotenimi": "Tuote D", "ostohinta": 7.75, "myyntihinta": 12.50, "toimittajan WWW-linkki": "https://www.example.com/toimittaja3"},
+            {"tuotekoodi": 5, "tuotenimi": "Tuote E", "ostohinta": 3.99, "myyntihinta": 6.99, "toimittajan WWW-linkki": "https://www.example.com/toimittaja4"},
+            {"tuotekoodi": 6, "tuotenimi": "Tuote F", "ostohinta": 15.00, "myyntihinta": 22.50, "toimittajan WWW-linkki": "https://www.example.com/toimittaja5"},
+            {"tuotekoodi": 7, "tuotenimi": "Tuote G", "ostohinta": 8.25, "myyntihinta": 13.75, "toimittajan WWW-linkki": "https://www.example.com/toimittaja5"},
+            {"tuotekoodi": 8, "tuotenimi": "Tuote H", "ostohinta": 12.50, "myyntihinta": 18.00, "toimittajan WWW-linkki": "https://www.example.com/toimittaja5"},
+            {"tuotekoodi": 9, "tuotenimi": "Tuote I", "ostohinta": 4.99, "myyntihinta": 9.99, "toimittajan WWW-linkki": "https://www.example.com/toimittaja6"},
+            {"tuotekoodi": 10, "tuotenimi": "Tuote J", "ostohinta": 9.99, "myyntihinta": 14.99, "toimittajan WWW-linkki": "https://www.example.com/toimittaja6"}
+        ]`;
+        const tuotteet = JSON.parse(tuotteetJson);
+                   
+        let tuoteTaulukko = `<table class="table table-striped table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Tuotekoodi</th>
+                    <th>Tuotenimi</th>
+                    <th>Ostohinta</th>
+                    <th>Myyntihinta</th>
+                    <th>Kate-%</th>
+                </tr>
+            </thead>
+            <tbody>`;
+        tuotteet.forEach(tuote => {
+            const kate = ((tuote.myyntihinta - tuote.ostohinta) / tuote.ostohinta * 100);
+
+            tuoteTaulukko += `<tr>
+                                  <td>${tuote.tuotekoodi}</td>
+                                  <td>${tuote.tuotenimi}</td>
+                                  <td>${tuote.ostohinta.toLocaleString("fi-FI", {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        })} €</td>
+                                  <td>${tuote.myyntihinta.toLocaleString("fi-FI", {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        })} €</td>
+                                  <td>${kate.toLocaleString("fi-FI", {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        })} %</td>
+                              </tr>`;
+        });
+        tuoteTaulukko += `</tbody></table>`;
+
+        tuotteetDiv.innerHTML = tuoteTaulukko;
+        
+        const toimittajatDiv = document.getElementById("toimittajat");
+        toimittajatDiv.innerHTML = `<ul class="list-group"></ul>`;
+
+        const lista = toimittajatDiv.querySelector("ul");
+
+        tuotteet.forEach(tuote => {
+            const olemassaOlevatLinkit = document.getElementsByClassName("tuotelinkit");
+            let loytyi = false;
+
+            for (let i = 0; i < olemassaOlevatLinkit.length; i++) {
+                if (olemassaOlevatLinkit[i].href === tuote["toimittajan WWW-linkki"]) {
+                    loytyi = true;
+                    break;
+                }
+            }
+
+            if (!loytyi) {
+                lista.innerHTML += `
+                    <li class="list-group-item list-group-item-action">
+                        <h5 class="mb-1">${tuote["toimittajan WWW-linkki"].substring(tuote["toimittajan WWW-linkki"].lastIndexOf("/") + 1)}</h5>
+                        <a class="tuotelinkit" href="${tuote["toimittajan WWW-linkki"]}" target="_blank" rel="noopener noreferrer">
+                            ${tuote["toimittajan WWW-linkki"]}
+                        </a>
+                    </li>
+                `;
+            }
+        });
+
+        const footerDiv = document.getElementById("footer");
+        footerDiv.innerHTML = `<p>Kiitos, että käytit JSON-tukkuliikkeen sovellusta! Toivottavasti löysit etsimäsi tuotteet ja toimittajat. Copyright &copy; ${new Date().getFullYear()} JSON-tukkuliike.</p>`;
+    </script>
+</body>
+</html>
