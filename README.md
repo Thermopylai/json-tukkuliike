@@ -1,5 +1,21 @@
 # JSON-tukkuliike
 
+![GitHub Pages](https://img.shields.io/badge/Live-Demo-green)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES6-yellow)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5-blue)
+
+## 📸 Esikatselu
+
+![Sovelluksen esikatselu](assets/screenshot.png)
+
+## 🔗 Live Demo
+
+👉 https://thermopylai.github.io/Json-tukkuliike/json-tukkuliike.html
+
+---
+
+## 📖 Kuvaus
+
 Tämä projekti esittelee yksinkertaisen tukkuliikkeen tuoteselaimen, jossa sisältö tuotetaan dynaamisesti **JavaScriptin** avulla **JSON-datan** perusteella.
 
 Sivulla näytetään:
